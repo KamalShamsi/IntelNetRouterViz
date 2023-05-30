@@ -1,1 +1,1 @@
-# IntelNetRouterViz
+IntelNetRouterViz: application is an interactive IPv6 router network visualization tool built with Python, NetworkX, Plotly, and Dash, which demonstrates router connectivity, provides detailed router information, and calculates the shortest path between routers using Dijkstra's algorithm
