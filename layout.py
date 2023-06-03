@@ -60,6 +60,67 @@ layout = html.Div([
         elements=[]
     ),
     html.Div([
+        dcc.Textarea(
+            id='text-total-cost',
+            placeholder='...',
+            readOnly='readonly',
+            draggable='false',
+            contentEditable='true',
+            style={
+                'resize': 'none',
+                'width': '443px',
+                'display': 'block',
+                'height': '135px',
+                'marginBottom': '5px',
+                'fontSize': '80px',
+                'text-align': 'center'
+            }
+        ),
+        html.Button(
+            id='calculate-shortest', n_clicks=0, children='Shortest Path',
+            style={
+                'padding': '10px 10px',
+                'fontSize': '20px',
+                'width': '449px',
+            }
+        ),
+    ], style={
+        'position': 'absolute',
+        'right': '2%',
+        'text-align': 'center'
+    }),
+    html.P(
+        children=['Tips:'],
+        style={
+            'fontSize': '20px',
+            'position': 'absolute',
+            'top': '610px',
+            'left': '50%',
+            'transform': 'translate(-50%, 0%)',
+            'line-height': '10px'
+        }
+    ),
+    html.P(
+        
+        children=[
+            html.Br(),
+            '1. You can freely drag elements around, all selected elements move together', html.Br(),
+            '2. To select multiple elements, use Shift + Left Click', html.Br(),
+            '3. Hosts can not connect to each other directly, connect them to routers', html.Br(),
+            '4. To add a connection, select one router and one host', html.Br(),
+            '5. To calculate the shortest path, select any two elements and press the button', html.Br(),
+            
+        ],
+        style={
+            'fontSize': '20px',
+            'position': 'absolute',
+            'top': '610px',
+            'left': '50%',
+            'transform': 'translate(-50%, 0%)',
+            'line-height': '30px'
+        }
+    ),
+    html.Div([
         html.Div([
             dcc.Input(
                 id='host-name', type='text', value='H1', placeholder='Name',
@@ -117,17 +178,16 @@ layout = html.Div([
                 }
             )
         ]),
-        html.Button(
-            id='remove-selected', n_clicks=0, children='Remove',
-            style={
-                'marginTop': '5px',
-                'padding': '10px 10px',
-                'fontSize': '20px',
-                'width': '449px',
-            }
-        ),
-    ], style={
-        'margin': 'auto',
-        'textAlign': 'center'
-    })
+        html.Div([
+            html.Button(
+                id='remove-selected', n_clicks=0, children='Remove',
+                style={
+                    'marginTop': '5px',
+                    'padding': '10px 10px',
+                    'fontSize': '20px',
+                    'width': '449px',
+                }
+            )
+        ]),
+    ], style={'marginLeft': '1%'}),
 ])

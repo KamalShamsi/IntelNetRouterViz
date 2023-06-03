@@ -35,7 +35,7 @@ def add_host(n_clicks, host_name):
     State('router-name', 'value'),
     prevent_initial_call=True # function is not called on startup
 )
-def add_router(n_clicks, router_name):
+def add_router(_, router_name):
     net.add_router(router_name)
     return net.get_elements(), f'R{net.n_routers + 1}'
 
@@ -46,9 +46,8 @@ def add_router(n_clicks, router_name):
     State('connection-cost', 'value'),
     prevent_initial_call=True # function is not called on startup
 )
-def add_connection(n_clicks, sel_nodes, cost):
-    if len(sel_nodes) == 2: # exactly two nodes are selected
-        print(sel_nodes)
+def add_connection(_, sel_nodes, cost):
+    if sel_nodes and len(sel_nodes) == 2: # exactly two nodes are selected
         net.add_connection(sel_nodes[0]['id'], sel_nodes[1]['id'], cost)
     return net.get_elements()
 
@@ -61,15 +60,27 @@ def add_connection(n_clicks, sel_nodes, cost):
     State('network-graph', 'selectedEdgeData'),
     prevent_initial_call=True # function is not called on startup
 )
-def remove_selected(n_clicks, sel_nodes, sel_edges):
-    print(sel_edges)
+def remove_selected(_, sel_nodes, sel_edges):
     if sel_nodes is not None:
         for n in sel_nodes: net.remove_node(n['id'])
     if sel_edges is not None:
         for e in sel_edges: net.remove_edge(e['source'], e['target'])
-    print(net.get_elements())
     return net.get_elements(), f'H{net.n_hosts+1}', f'R{net.n_routers+1}'
 
+@app.callback(
+    Output('text-total-cost', 'value'),
+    Input('calculate-shortest', 'n_clicks'),
+    State('network-graph', 'selectedNodeData'),
+    prevent_initial_call=True # function is not called on startup
+)
+def calculate_path(_, sel_nodes):
+    if sel_nodes and len(sel_nodes) == 2: # exactly two nodes are selected
+        path, cost = net.dijkstra(sel_nodes[0]['id'], sel_nodes[1]['id'])
+        return str(cost)
+    else:
+        return ''
+
+#-----------------------------------------------------------------------------------------------------#
 
 # Router list
 #routers = []
