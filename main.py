@@ -98,13 +98,13 @@ def add_connection(n_clicks, sel_nodes, cost):
         elif not sel_nodes or len(sel_nodes) != 2:
             err_state = ErrorState.SELECT_2
         else:
-            # change tutorial state
-            if tut_state == TutorialState.NODES_ADDED: tut_state = TutorialState.CON_ADDED
-
             # add connection
             rs = net.add_connection(sel_nodes[0]['id'], sel_nodes[1]['id'], cost)
             if rs != ErrorState.OK:
                 err_state = rs
+            else:
+                # change tutorial state
+                if tut_state == TutorialState.NODES_ADDED: tut_state = TutorialState.CON_ADDED
 
     text, style = skip_button_text_style(tut_state, err_state)
     return net.get_elements(), msg(tut_state, err_state), text, style

@@ -18,8 +18,8 @@ class ErrorState(Enum):
     SELECT_1 = 'You need to select an element first!'
     SELECT_2 = 'You need to select exactly two elements! (use shift+click)'
     INV_COST = 'Entered cost is invalid!'
-    HOST_HOST_CON = ''
-    HOST_SECOND_CON = ''
+    HOST_HOST_CON = 'You can only connect hosts to routers!'
+    HOST_SECOND_CON = 'Host is already connected to a router!'
 
 # function that decides the final message
 def msg(tut, err):
