@@ -1,6 +1,8 @@
 import node as n
 import heapq
 
+from states import ErrorState
+
 class NetworkGraph():
     def __init__(self, elements=[]) -> None:
         # these fields are used for network display only
@@ -23,7 +25,11 @@ class NetworkGraph():
 
         # add new node element (to self.elements)
         self.elements.append({
-            'data': {'id': node.name, 'label': f'{node.name}\n{node.ipv6_address}'},
+            'data': {
+                'id': node.name,
+                'label': f'{node.name}\n{node.ipv6_address}',
+                'is_highlighted': 'false'
+            },
             'classes': 'router'
         })
 
@@ -42,18 +48,31 @@ class NetworkGraph():
 
         # add new node element (to self.elements)
         self.elements.append({
-            'data': {'id': node.name, 'label': f'{node.name}\n{node.ipv6_address}'},
+            'data': {
+                'id': node.name,
+                'label': f'{node.name}\n{node.ipv6_address}',
+                'is_highlighted': 'false'
+            },
             'classes': 'host'
         })
 
         # increment host counter
         self.n_hosts += 1
 
-    def add_connection(self, id1: str, id2: str, cost: int) -> None:
+    def add_connection(self, id1: str, id2: str, cost: int):
+        # find nodes with given id's
+        n1 = self.elements[self.find_node_element(id1)]
+        n2 = self.elements[self.find_node_element(id2)]
+
         # check if both nodes are hosts (hosts can't directly connect to each other)
-        if (self.elements[self.find_node_element(id1)]['classes'] == 'host' and
-            self.elements[self.find_node_element(id2)]['classes'] == 'host'):
-            return
+        if (n1['classes'] == 'host' and n2['classes'] == 'host'):
+            return ErrorState.HOST_HOST_CON
+        
+        # check if any given node is a host with an existing connection
+        for n in [n1, n2]:
+            if n['classes'] == 'host' and len(self.nodes[n['data']['id']].neighbors) > 0:
+                return ErrorState.HOST_SECOND_CON
+
         
         # if edge already exists, remove the old one first
         self.remove_edge(id1, id2)
@@ -61,7 +80,16 @@ class NetworkGraph():
         # add neighbor relations to self.nodes accordingly
         self.nodes[id1].add_neighbor(self.nodes[id2], cost)
 
-        self.elements.append({'data': {'source': id1, 'target': id2, 'label': str(cost)}})
+        self.elements.append({
+            'data': {
+                'source': id1,
+                'target': id2,
+                'label': str(cost),
+                'is_highlighted': 'false'
+            }
+        })
+
+        return ErrorState.OK
     
     def remove_node(self, id: str) -> None:
         if id in self.nodes:
@@ -134,9 +162,32 @@ class NetworkGraph():
             for cost, neighbor in path[i].neighbors:
                 if neighbor == path[i+1]:
                     total_cost += cost
-
-        return path, total_cost
+        
+        if total_cost == 0: return [],   'Unreachable'
+        else:               return path, str(total_cost)
     
+    def highlight_path(self, path):
+        nodes = [n.name for n in path]
+        edges = [set([nodes[i], nodes[i+1]]) for i in range(len(nodes) - 1)]
+        for e in self.elements:
+            if e['data'].get('id') is not None: # element is a node
+                if e['data'].get('id') in nodes:
+                    e['data']['is_highlighted'] = 'true'
+            else:                               # element is an edge
+                # use set to compare unordered pairs
+                if set([e['data'].get('source'), e['data'].get('target')]) in edges:
+                    e['data']['is_highlighted'] = 'true'
+                
+    def unhighlight_path(self):
+        for e in self.elements:
+            e['data']['is_highlighted'] = 'false'
+    
+    def reset(self):
+        self.elements = []
+        self.n_hosts = 0
+        self.n_routers = 0
+        self.nodes = {}
+
     def get_elements(self):
         return self.elements
 
@@ -145,8 +196,10 @@ class NetworkGraph():
             if e['data'].get('id') == id:
                 return i
     
-    def find_edge_element(self, src: str, tgt: str) -> int:
+    def find_edge_element(self, id1: str, id2: str) -> int:
         for i, e in enumerate(self.elements):
-            if (e['data'].get('source') == src and
-                e['data'].get('target') == tgt):
+            if (e['data'].get('source') == id1 and
+                e['data'].get('target') == id2) or\
+               (e['data'].get('target') == id2 and
+                e['data'].get('source') == id1):
                 return i

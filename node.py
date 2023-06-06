@@ -1,9 +1,9 @@
-import random
+import secrets
 
 class Node:
     def __init__(self, name):
         self.name = name
-        self.ipv6_address = "2001:db8::" + str(random.randint(0, 65535))
+        self.ipv6_address = "2001:db8::" + secrets.token_hex(2)
         self.neighbors = []
 
     def add_neighbor(self, neighbor: 'Node', cost: int):

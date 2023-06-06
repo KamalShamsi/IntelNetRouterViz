@@ -1,14 +1,15 @@
 from dash import dcc, html
 import dash_cytoscape as cyto
 
+skip_button_style = {
+    'position': 'absolute',
+    'right': 'calc(0.5% + 7px)',
+    'bottom': '10px',
+    'padding': '3px',
+    'fontSize': '15px',
+}
+
 layout = html.Div([
-    #dcc.Input(id='num-routers', type='number', min=2, step=1, placeholder='Enter number of routers'),
-    #html.Button(id='create-routers', n_clicks=0, children='Create routers'),
-    #dcc.Dropdown(id='start-router', placeholder='Select start router'),
-    #dcc.Dropdown(id='dest-router', placeholder='Select destination router'),
-    #html.Button(id='calculate-path', n_clicks=0, children='Calculate path'),
-    #dcc.Graph(id='network-graph'),
-    #dcc.Graph(id='table'),
     cyto.Cytoscape(
         id='network-graph',
         layout={'name': 'preset', 'fit': True, 'animate': True, 'animationDuration': 200},
@@ -51,6 +52,14 @@ layout = html.Div([
                     'text-valign': 'center',
                 }
             },
+            {
+                'selector': 'edge:unselected[is_highlighted = "true"],'\
+                            ' node:unselected[is_highlighted = "true"]',
+                'style': {
+                    'line-color': 'green',
+                    'background-color': 'green'
+                }
+            },
         ],
         autoRefreshLayout=True,
         boxSelectionEnabled=False,
@@ -61,19 +70,54 @@ layout = html.Div([
     ),
     html.Div([
         dcc.Textarea(
+            id='text-tips',
+            value='Add a router or a host to start!',
+            readOnly='readonly',
+            draggable='false',
+            style={
+                'width': '100%',
+                'height': '100%',
+                'resize': 'none',
+                'padding': '10px 2%',
+                'fontSize': 'min(25px, 1.5vw)',
+                'box-sizing': 'border-box'
+            }
+        ),
+        html.Button(
+            id='tut-skip', n_clicks=0, children='Skip',
+            style=skip_button_style.copy()
+        ),
+    ], style={
+        'position': 'absolute',
+        'top': '629px',
+        'left': 'calc(49.5% + 4px)',
+        'transform': 'translate(-50%, 0%)',
+        'width': 'calc(95% - 920px)',
+        'height': '194px',
+        'margin': 'none'
+    }),
+    html.Div([
+        dcc.Textarea(
             id='text-total-cost',
             placeholder='...',
             readOnly='readonly',
             draggable='false',
-            contentEditable='true',
             style={
                 'resize': 'none',
                 'width': '443px',
                 'display': 'block',
                 'height': '135px',
                 'marginBottom': '5px',
-                'fontSize': '80px',
-                'text-align': 'center'
+                'fontSize': '70px',
+                'textAlign': 'center'
+            }
+        ),
+        html.Button(
+            id='clear-shortest', n_clicks=0, children='Clear',
+            style={
+                'padding': '10px 10px',
+                'fontSize': '20px',
+                'width': '222px',
             }
         ),
         html.Button(
@@ -81,45 +125,16 @@ layout = html.Div([
             style={
                 'padding': '10px 10px',
                 'fontSize': '20px',
-                'width': '449px',
+                'width': '222px',
+                'marginLeft': '5px'
             }
         ),
     ], style={
         'position': 'absolute',
         'right': '2%',
-        'text-align': 'center'
+        'textAlign': 'center'
     }),
-    html.P(
-        children=['Tips:'],
-        style={
-            'fontSize': '20px',
-            'position': 'absolute',
-            'top': '610px',
-            'left': '50%',
-            'transform': 'translate(-50%, 0%)',
-            'line-height': '10px'
-        }
-    ),
-    html.P(
-        
-        children=[
-            html.Br(),
-            '1. You can freely drag elements around, all selected elements move together', html.Br(),
-            '2. To select multiple elements, use Shift + Left Click', html.Br(),
-            '3. Hosts can not connect to each other directly, connect them to routers', html.Br(),
-            '4. To add a connection, select one router and one host', html.Br(),
-            '5. To calculate the shortest path, select any two elements and press the button', html.Br(),
-            
-        ],
-        style={
-            'fontSize': '20px',
-            'position': 'absolute',
-            'top': '610px',
-            'left': '50%',
-            'transform': 'translate(-50%, 0%)',
-            'line-height': '30px'
-        }
-    ),
+    
     html.Div([
         html.Div([
             dcc.Input(
@@ -180,12 +195,22 @@ layout = html.Div([
         ]),
         html.Div([
             html.Button(
+                id='reset-network', n_clicks=0, children='Reset Network',
+                style={
+                    'marginTop': '5px',
+                    'marginRight': '5px',
+                    'padding': '10px 10px',
+                    'fontSize': '20px',
+                    'width': '274px',
+                }
+            ),
+            html.Button(
                 id='remove-selected', n_clicks=0, children='Remove',
                 style={
                     'marginTop': '5px',
                     'padding': '10px 10px',
                     'fontSize': '20px',
-                    'width': '449px',
+                    'width': '170px',
                 }
             )
         ]),
