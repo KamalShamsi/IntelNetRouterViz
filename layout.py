@@ -10,6 +10,7 @@ skip_button_style = {
 }
 
 layout = html.Div([
+    dcc.Store(id='sp-data', storage_type='session', data={'total_cost': '', 'iter': 0}),
     cyto.Cytoscape(
         id='network-graph',
         layout={'name': 'preset', 'fit': True, 'animate': True, 'animationDuration': 200},

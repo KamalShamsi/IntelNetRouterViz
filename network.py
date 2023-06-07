@@ -1,7 +1,7 @@
 import node as n
 import heapq
 
-from states import ErrorState
+import states as st
 
 class NetworkGraph():
     def __init__(self, elements=[]) -> None:
@@ -66,12 +66,12 @@ class NetworkGraph():
 
         # check if both nodes are hosts (hosts can't directly connect to each other)
         if (n1['classes'] == 'host' and n2['classes'] == 'host'):
-            return ErrorState.HOST_HOST_CON
+            return st.ErrorState.HOST_HOST_CON
         
         # check if any given node is a host with an existing connection
         for n in [n1, n2]:
             if n['classes'] == 'host' and len(self.nodes[n['data']['id']].neighbors) > 0:
-                return ErrorState.HOST_SECOND_CON
+                return st.ErrorState.HOST_SECOND_CON
 
         
         # if edge already exists, remove the old one first
@@ -89,7 +89,7 @@ class NetworkGraph():
             }
         })
 
-        return ErrorState.OK
+        return st.ErrorState.OK
     
     def remove_node(self, id: str) -> None:
         if id in self.nodes:
