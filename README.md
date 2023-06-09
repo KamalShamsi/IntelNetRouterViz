@@ -20,7 +20,9 @@ Run ```python -m venv venv``` to create the environment folder in your current w
 For Windows (powershell): ```venv\Scripts\Activate.ps1``` <br>
 For Mac/Linux: ```source myvenv/bin/activate``` <br>
 Once it is activated, you should see something like (env) attached to your prompt. <br>
-**To deactivate the environment simply type ```deactivate```.**
+**To deactivate the environment simply type ```deactivate```.** <br>
+**Note (from the [official python docs](https://docs.python.org/3/library/venv.html)):** On Microsoft Windows, it may be required to enable the Activate.ps1 script by setting the execution policy for the user. You can do this by issuing the following PowerShell command:
+```Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser```
 
 3. **Install dependencies** <br>
 While inside an activated environment navigate to the project folder and make sure it contains the 'requirements.txt' file. <br>
